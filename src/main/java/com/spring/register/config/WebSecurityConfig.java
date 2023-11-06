@@ -10,12 +10,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.spring.register.service.PrincipalOauth2UserService;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Configuration
 public class WebSecurityConfig {
 	private final UserDetailsService userService;
+	private final PrincipalOauth2UserService principalOauth2UserService;
 	
 	@Bean
 	public WebSecurityCustomizer configure() {
@@ -44,6 +47,15 @@ public class WebSecurityConfig {
 						})
 						
 						.csrf(csrf -> csrf.disable())
+						
+						.oauth2Login(oauth2Login -> oauth2Login
+								.loginPage("/login")
+								.defaultSuccessUrl("/")
+								.userInfoEndpoint(userInfo -> userInfo
+										.userService(principalOauth2UserService)
+										)
+								)
+						
 						
 						.build();
 	}
